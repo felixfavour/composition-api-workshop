@@ -1,0 +1,234 @@
+<template>
+  <div id="shopping-list">
+    <div class="header">
+      <h1>{{ header.toLocaleUpperCase() }}</h1>
+      <button
+        v-if="state === 'default'"
+        class="btn btn-primary"
+        @click="changeState('edit')"
+      >
+        Add Item
+      </button>
+      <button v-else class="btn btn-cancel" @click="changeState('default')">
+        Cancel Adding Item
+      </button>
+    </div>
+    <div v-if="state === 'edit'" class="add-item-form">
+      <input
+        v-model="newItem"
+        type="text"
+        placeholder="Add an item"
+        @keyup.enter="saveItem"
+      />
+      <button
+        class="btn btn-primary"
+        :disabled="newItem.length === 0"
+        @click="saveItem"
+      >
+        Save Item
+      </button>
+    </div>
+    <ul>
+      <li
+        v-for="item in reversedItems"
+        :key="item.label"
+        :class="{ strikeout: item.purchased }"
+        @click="togglePurchased(item)"
+      >
+        {{ item.label }}
+      </li>
+    </ul>
+    <p v-if="items.length === 0">Nice job! You've bought all your items.</p>
+  </div>
+</template>
+
+<!-- SCRIPT TAG NOW CONTAINS SETUP ATTRIBUTE -->
+<script setup>
+import { ref, onMounted, computed } from 'vue';
+
+// Component state variables converted to refs
+const state = ref("default")
+const header = ref("shopping list app")
+const newItem = ref("")
+const items = ref([
+  {
+    label: "10 party hats",
+    purchased: false,
+    highPriority: false,
+  },
+  {
+    label: "2 board games",
+    purchased: true,
+    highPriority: false,
+  },
+])
+
+// Computed property converted to use the computed function syntax
+const reversedItems = computed(() => items.value.slice(0).reverse())
+
+// Mounted lifecycle hook converted to use Composition API syntax
+onMounted(() => {
+  const item = {
+    label: "20 cups",
+    purchased: false,
+    highPriority: false,
+  };
+  items.value.push(item);
+})
+
+// Functions declared as normal JS functions 
+// in the global scope to fit Composition API syntax
+function saveItem () {
+  items.value.push({
+    label: newItem.value,
+    purchased: false,
+  });
+  newItem.value = "";
+}
+function changeState(newState) {
+  state.value = newState;
+  newItem.value = "";
+}
+function togglePurchased(item) {
+  item.purchased = !item.purchased;
+}
+</script>
+
+<style scoped>
+#shopping-list {
+  background: #fff;
+  padding: 2rem;
+  margin: 1rem;
+  border-radius: 3px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.12), 0 2px 4px 0 rgba(0, 0, 0, 0.08);
+  width: 95%;
+  max-width: 900px;
+}
+
+h1 {
+  color: #3d4852;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+a {
+  color: #6cb2eb;
+  font-size: 1.25rem;
+  transition: all 0.1s ease-in;
+  margin-top: 0.5rem;
+  display: block;
+}
+
+a:hover {
+  color: #3490dc;
+}
+
+li,
+p {
+  display: flex;
+  align-items: center;
+  line-height: 1.75;
+  letter-spacing: 0.5px;
+  color: #3d4852;
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: all 0.1s ease-in;
+}
+
+li:hover {
+  color: #22292f;
+}
+
+li input {
+  margin: 0 0.5rem 0;
+}
+
+#shopping-list > input,
+#shopping-list > select {
+  width: 100%;
+  border-radius: 3px;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+  border: 1px solid #f1f5f8;
+  color: #606f7b;
+  padding: 0.5rem 0.75rem;
+  box-sizing: border-box;
+  font-size: 1rem;
+  letter-spacing: 0.5px;
+  margin: 0.5rem 0;
+}
+
+.add-item-form,
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.add-item-form input {
+  width: 70%;
+  border-radius: 3px;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+  border: 1px solid #f1f5f8;
+  color: #606f7b;
+  padding: 0.5rem 0.75rem;
+  box-sizing: border-box;
+  font-size: 1rem;
+  letter-spacing: 0.5px;
+  margin: 0.5rem 0;
+}
+
+.btn {
+  border: none;
+  border-radius: 3px;
+  margin: auto 0;
+  padding: 0.5rem 0.75rem;
+  flex-shrink: 0;
+  cursor: pointer;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+  transition: all 0.1s ease-in;
+}
+
+.btn[disabled] {
+  background: #8795a1;
+}
+
+.btn[disabled]:hover {
+  background: #606f7b;
+}
+
+.btn-primary {
+  background: #6cb2eb;
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: #3490dc;
+}
+
+.btn-cancel {
+  background: #ef5753;
+  color: #fff;
+}
+
+.btn-cancel:hover {
+  background: #e3342f;
+  color: #fff;
+}
+
+.strikeout {
+  text-decoration: line-through;
+  color: #b8c2cc;
+}
+
+.strikeout:hover {
+  color: #8795a1;
+}
+
+.priority {
+  color: #de751f;
+}
+</style>
